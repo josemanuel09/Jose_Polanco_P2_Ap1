@@ -1,4 +1,6 @@
 
+using Jose_Polanco_P2_Ap1.Api.DAL;
+
 namespace Jose_Polanco_P2_Ap1.Api
 {
     public class Program
@@ -13,6 +15,8 @@ namespace Jose_Polanco_P2_Ap1.Api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<Contexto>();
 
             var app = builder.Build();
 
