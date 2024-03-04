@@ -22,6 +22,14 @@ namespace Jose_Polanco_P2_Ap1.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            //CORDS
+           
+            app.UseCors(options =>
+            {
+                options.AllowAnyOrigin();
+                options.AllowAnyHeader();
+                options.AllowAnyMethod();
+            });
 
             app.UseHttpsRedirection();
 
