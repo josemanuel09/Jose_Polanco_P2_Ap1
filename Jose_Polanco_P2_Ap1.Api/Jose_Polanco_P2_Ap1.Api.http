@@ -1,0 +1,6 @@
+@Jose_Polanco_P2_Ap1.Api_HostAddress = http://localhost:5297
+
+GET {{Jose_Polanco_P2_Ap1.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
