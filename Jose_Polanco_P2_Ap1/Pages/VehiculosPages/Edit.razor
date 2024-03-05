@@ -2,6 +2,7 @@
 @page "/Edit/{VehiculoId:int}"
 @inject HttpClient httpClient
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 <EditForm Model="vehiculos" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
@@ -45,7 +46,7 @@
                 <div class="row">
                     <div class="col">
                         <div>
-                            <label class="fw-bold mt-3"> AccesorioId</label>
+                            <label class="fw-bold mt-3"> Accesorio</label>
                             <InputSelect @bind-Value="Detalles.AccesorioId" class="form-select">
                                 @foreach (var accesorio in listaAccesorios)
                                 {
@@ -58,7 +59,7 @@
                     <div class="col">
                         <div>
                             <label class="fw-bold mt-3">Valor</label>
-                            <InputNumber @bind-Value="Detalles.Valor" class="form-control" placeholder="Agregue un mensaje."></InputNumber>
+                            <InputNumber @bind-Value="Detalles.Valor" class="form-control" placeholder="Agregue un valor."></InputNumber>
                             <ValidationMessage For="@(() => Detalles.Valor)" />
                         </div>
                     </div>
@@ -96,7 +97,7 @@
                     {
                         var accesorio = listaAccesorios.FirstOrDefault(a => a.AccesorioId == detalle.AccesorioId);
                         <tr>
-                            <td>@detalle.AccesorioId - @accesorio?.Descripcion</td>
+                            <td>@detalle.AccesorioId</td>
                             <td>@detalle.Valor</td>
                             <td><button type="button" class="btn btn-danger bi bi-trash-fill" @onclick=@(() => RemoverDetalle(detalle))></button></td>
                         </tr>
@@ -143,10 +144,7 @@
     public string MensajeExitoGuardar { get; set; }
     public string MensajeExitoAgregar { get; set; }
 
-    public int resultado { get; set; }
-    public string? mensaje { get; set; }
-    public string Nombre { get; set; } = string.Empty;
-    public string MensajeTicket { get; set; } = string.Empty;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -187,30 +185,20 @@
     }
     public async Task Guardar()
     {
+
         var responde = await httpClient.PutAsJsonAsync($"api/Vehiculos/{VehiculoId}", vehiculos);
         if (responde.IsSuccessStatusCode)
         {
             MensajeExitoGuardar = "Registro guardado con éxito";
+            await JSRuntime.InvokeVoidAsync("hideMessage", 3000);
         }
         else
         {
             MensajeError = "Error al guardar el registro";
+            await JSRuntime.InvokeVoidAsync("hideMessage", 3000);
         }
-        // if (Detalles.AccesorioId != 0 && Detalles.Valor != 0)
-        // {
-        //     vehiculos.VehiculosDetalle.Add(Detalles);
-
-        // }
-        // var response = await httpClient.PostAsJsonAsync($"api/Vehiculos", vehiculos);
-        // if (!response.IsSuccessStatusCode)
-        // {
-        //     return;
-        // }
 
         Volver();
-        //Nuevo();
-        //StateHasChanged();
-        // navigationManager.NavigateTo("/Index");
 
     }
     public void Nuevo()
@@ -232,13 +220,9 @@
         Volver();
     }
 
-    // public bool Validar()
-    // {
-    //     valorVacio = string.IsNullOrEmpty(Valor);
-    //     return valorVacio;
-    // }
 
-    public void AgregarDetalle()
+
+    public async void AgregarDetalle()
     {
         if (Detalles.AccesorioId != 0 && Detalles.Valor != 0)
         {
@@ -254,12 +238,14 @@
             Detalles.AccesorioId = 0;
             Detalles.Valor = 0;
 
-
+            MensajeExitoAgregar = "Detalle agregado con éxito.";
+            await JSRuntime.InvokeVoidAsync("hideMessage", 3000);
             StateHasChanged();
         }
         else
         {
             MensajeError = "Ambos campos (AccesorioId y Valor) son requeridos.";
+            await JSRuntime.InvokeVoidAsync("hideMessage", 3000);
             StateHasChanged();
         }
     }
@@ -281,3 +267,17 @@
         NavigationManager.NavigateTo("Index");
     }
 }
+<script>
+    function hideMessage(duration) {
+        setTimeout(function () {
+            var message = document.querySelector('.alert-success');
+            if (message) {
+                message.style.display = 'none';
+            }
+        }, duration);
+    }
+</script>
+
+
+
+
