@@ -1,5 +1,6 @@
 
 using Jose_Polanco_P2_Ap1.Api.DAL;
+using Microsoft.EntityFrameworkCore;
 
 namespace Jose_Polanco_P2_Ap1.Api
 {
@@ -16,7 +17,8 @@ namespace Jose_Polanco_P2_Ap1.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDbContext<Contexto>();
+            var ConStr = builder.Configuration.GetConnectionString("ConStr");
+            builder.Services.AddDbContext<Contexto>(options => options.UseSqlite(ConStr));
 
             var app = builder.Build();
 
