@@ -38,14 +38,71 @@
                 <InputNumber @bind-Value="vehiculos.Gastos" class="form-control"></InputNumber>
                 <ValidationMessage For="@(() => vehiculos.Gastos)" />
             </div>
+
+            <h3 class="mt-5">Vehiculos Detalle</h3>
+
+            <div>
+                <label class="fw-bold mt-3"> AccesorioId</label>
+                <InputSelect @bind-Value="Detalles.AccesorioId" class="form-select">
+                    @foreach (var accesorio in listaAccesorios)
+                    {
+                        <option value="@accesorio.AccesorioId">@accesorio.Descripcion</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => Detalles.AccesorioId)" />
+            </div>
+            <div>
+                <label class="fw-bold mt-3">Valor</label>
+                <InputNumber @bind-Value="Detalles.Valor" class="form-control" placeholder="Agregue un mensaje."></InputNumber>
+                <ValidationMessage For="@(() => Detalles.Valor)" />
+            </div>
+
+            <div class="card-footer d-flex justify-content-center">
+                <button type="button" @onclick="AgregarDetalle" class="btn btn-outline-success">Agregar</button>
+            </div>
+
+            @if (!string.IsNullOrEmpty(MensajeExitoAgregar))
+            {
+                <div class="alert alert-success" role="alert">
+                    @MensajeExitoAgregar
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(MensajeError))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @MensajeError
+                </div>
+            }
+
+            <table class='table table-bordered table-hover'>
+                <thead>
+                    <tr>
+
+                        <th>AccesorioId</th>
+                        <th>Valor</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detalle in vehiculos.VehiculosDetalle)
+                    {
+                        var ticketEncontrado = BuscarVehiculos(detalle.VehiculoId);
+                        <tr>
+
+                            <td>@detalle.AccesorioId</td>
+                            <td>@detalle.Valor</td>
+                            <td><button type="button" class="btn btn-danger bi bi-trash-fill" @onclick=@(() => RemoverDetalle(detalle))></button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
         </div>
         <div class="card-footer text-center ">
 
             <button class="btn btn-success bi-floppy-fill">Guardar </button>
             <button type="button" class="btn btn-primary bi bi-file-earmark-plus-fill" @onclick="Nuevo">Nuevo </button>
             <a href="/Index" type="button" class="btn btn-secondary bi bi-arrow-left-square-fill" @onclick="Nuevo">Volver atr&aacute;s </a>
-
-
 
         </div>
 
@@ -56,68 +113,8 @@
 
             </div>
         }
-        
+
     </div>
-
-    @*Detalles:*@
-    <div class="card card-header mt-5">
-        <h3>Vehiculos Detalle</h3>
-        
-        <div>
-            <label class="fw-bold mt-3"> AccesorioId</label>
-            <InputSelect @bind-Value="Detalles.AccesorioId" class="form-select">
-                @foreach (var accesorio in listaAccesorios)
-                {
-                    <option value="@accesorio.AccesorioId">@accesorio.Descripcion</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="@(() => Detalles.AccesorioId)" />
-        </div>
-        <div>
-            <label class="fw-bold mt-3">Valor</label>
-            <InputNumber @bind-Value="Detalles.Valor" class="form-control" placeholder="Agregue un mensaje."></InputNumber>
-            <ValidationMessage For="@(() => Detalles.Valor)" />
-        </div>
-        <div class="card-footer d-flex justify-content-center">
-            <button type="button" @onclick="AgregarDetalle" class="btn btn-outline-success">Agregar</button>
-        </div>
-        @if (!string.IsNullOrEmpty(MensajeExitoAgregar))
-        {
-            <div class="alert alert-success" role="alert">
-                @MensajeExitoAgregar
-            </div>
-        }
-        @if (!string.IsNullOrEmpty(MensajeError))
-        {
-            <div class="alert alert-danger" role="alert">
-                @MensajeError
-            </div>
-        }
-
-        <table class='table table-bordered table-hover'>
-            <thead>
-                <tr>
-                    
-                    <th>AccesorioId</th>
-                    <th>Valor</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var detalle in vehiculos.VehiculosDetalle)
-                {
-                    var ticketEncontrado = BuscarVehiculos(detalle.VehiculoId);
-                    <tr>
-                        
-                        <td>@detalle.AccesorioId</td>
-                        <td>@detalle.Valor</td>
-                        <td><button type="button" class="btn btn-danger bi bi-trash-fill" @onclick=@(() => RemoverDetalle(detalle))></button></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div> 
-
 </EditForm>
 
 @code {
