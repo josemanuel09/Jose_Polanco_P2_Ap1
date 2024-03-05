@@ -2,6 +2,7 @@
 @page "/Create/{VehiculoId:int}"
 @inject HttpClient httpClient
 @inject NavigationManager NavigationManager
+
 <EditForm Model="vehiculos" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
     <div class="card">
@@ -9,10 +10,9 @@
             <h1>Registro Vehiculos</h1>
         </div>
         <div class="card-body">
-
             <div class="row">
                 <div class="col-6">
-                    <label class="fw-bold">TicketID:</label>
+                    <label class="fw-bold">VehiculoID:</label>
                     <InputNumber @bind-Value="vehiculos.VehiculoId" class="form-control"></InputNumber>
                 </div>
                 <div class="col-6">
@@ -39,82 +39,90 @@
                 <ValidationMessage For="@(() => vehiculos.Gastos)" />
             </div>
 
-            <h3 class="mt-5">Vehiculos Detalle</h3>
 
-            <div>
-                <label class="fw-bold mt-3"> AccesorioId</label>
-                <InputSelect @bind-Value="Detalles.AccesorioId" class="form-select">
-                    @foreach (var accesorio in listaAccesorios)
-                    {
-                        <option value="@accesorio.AccesorioId">@accesorio.Descripcion</option>
-                    }
-                </InputSelect>
-                <ValidationMessage For="@(() => Detalles.AccesorioId)" />
-            </div>
-            <div>
-                <label class="fw-bold mt-3">Valor</label>
-                <InputNumber @bind-Value="Detalles.Valor" class="form-control" placeholder="Agregue un mensaje."></InputNumber>
-                <ValidationMessage For="@(() => Detalles.Valor)" />
-            </div>
-
-            <div class="card-footer d-flex justify-content-center">
-                <button type="button" @onclick="AgregarDetalle" class="btn btn-outline-success">Agregar</button>
-            </div>
-
-            @if (!string.IsNullOrEmpty(MensajeExitoAgregar))
-            {
-                <div class="alert alert-success" role="alert">
-                    @MensajeExitoAgregar
+            <div class="card card-header mt-5">
+                <h3>Detalle de Vehiculos</h3>
+                <div class="row">
+                    <div class="col">
+                        <div>
+                            <label class="fw-bold mt-3"> AccesorioId</label>
+                            <InputSelect @bind-Value="Detalles.AccesorioId" class="form-select">
+                                @foreach (var accesorio in listaAccesorios)
+                                {
+                                    <option value="@accesorio.AccesorioId">@accesorio.Descripcion</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => Detalles.AccesorioId)" />
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div>
+                            <label class="fw-bold mt-3">Valor</label>
+                            <InputNumber @bind-Value="Detalles.Valor" class="form-control" placeholder="Agregue un mensaje."></InputNumber>
+                            <ValidationMessage For="@(() => Detalles.Valor)" />
+                        </div>
+                    </div>
                 </div>
-            }
-            @if (!string.IsNullOrEmpty(MensajeError))
-            {
-                <div class="alert alert-danger" role="alert">
-                    @MensajeError
+
+                <div class="card-footer d-flex justify-content-center">
+                    <button type="button" @onclick="AgregarDetalle" class="btn btn-outline-success">Agregar</button>
                 </div>
-            }
 
-            <table class='table table-bordered table-hover'>
-                <thead>
-                    <tr>
+                @if (!string.IsNullOrEmpty(MensajeExitoAgregar))
+                {
+                    <div class="alert alert-success" role="alert">
+                        @MensajeExitoAgregar
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(MensajeError))
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @MensajeError
+                    </div>
+                }
+            </div>
 
-                        <th>AccesorioId</th>
-                        <th>Valor</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var detalle in vehiculos.VehiculosDetalle)
-                    {
-                        var ticketEncontrado = BuscarVehiculos(detalle.VehiculoId);
+
+                <table class='table table-bordered table-hover'>
+                    <thead>
                         <tr>
-
-                            <td>@detalle.AccesorioId</td>
-                            <td>@detalle.Valor</td>
-                            <td><button type="button" class="btn btn-danger bi bi-trash-fill" @onclick=@(() => RemoverDetalle(detalle))></button></td>
+                            <th>AccesorioId</th>
+                            <th>Valor</th>
+                            <th></th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-
-        </div>
-        <div class="card-footer text-center ">
-
-            <button class="btn btn-success bi-floppy-fill">Guardar </button>
-            <button type="button" class="btn btn-primary bi bi-file-earmark-plus-fill" @onclick="Nuevo">Nuevo </button>
-            <a href="/Index" type="button" class="btn btn-secondary bi bi-arrow-left-square-fill" @onclick="Nuevo">Volver atr&aacute;s </a>
-
-        </div>
-
-        @if (!string.IsNullOrEmpty(MensajeExitoGuardar))
-        {
-            <div class=" alert alert-success" role="alert">
-                @MensajeExitoGuardar
+                    </thead>
+                    <tbody>
+                        @foreach (var detalle in vehiculos.VehiculosDetalle)
+                        {
+                            var accesorio = listaAccesorios.FirstOrDefault(a => a.AccesorioId == detalle.AccesorioId);
+                            <tr>
+                                <td>@detalle.AccesorioId - @accesorio?.Descripcion</td>
+                                <td>@detalle.Valor</td>
+                                <td><button type="button" class="btn btn-danger bi bi-trash-fill" @onclick=@(() => RemoverDetalle(detalle))></button></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
 
             </div>
-        }
+            <div class="card-footer text-center ">
 
-    </div>
+                <button class="btn btn-success bi-floppy-fill">Guardar </button>
+                <button type="button" class="btn btn-primary bi bi-file-earmark-plus-fill" @onclick="Nuevo">Nuevo </button>
+                <a href="/Index" type="button" class="btn btn-secondary bi bi-arrow-left-square-fill" @onclick="Nuevo">Volver atr&aacute;s </a>
+
+            </div>
+
+            @if (!string.IsNullOrEmpty(MensajeExitoGuardar))
+            {
+                <div class=" alert alert-success" role="alert">
+                    @MensajeExitoGuardar
+
+                </div>
+            }
+
+        </div>
+    
 </EditForm>
 
 @code {
@@ -129,7 +137,7 @@
     public VehiculosDetalle Detalles { get; set; } = new VehiculosDetalle();
     public List<VehiculosDetalle> listaDetalles = new List<VehiculosDetalle>();
     public bool valorVacio;
-    
+
 
     public string MensajeError { get; set; }
     public string MensajeExitoGuardar { get; set; }
@@ -180,7 +188,7 @@
     public async Task Guardar()
     {
         if (Detalles.AccesorioId != 0 && Detalles.Valor != 0)
-        { 
+        {
             vehiculos.VehiculosDetalle.Add(Detalles);
 
         }
@@ -190,7 +198,7 @@
             return;
         }
 
-
+        Volver();
         //Nuevo();
         //StateHasChanged();
         // navigationManager.NavigateTo("/Index");
@@ -222,32 +230,33 @@
     // }
 
     public void AgregarDetalle()
-{
-    if (Detalles.AccesorioId != 0 && Detalles.Valor != 0)
     {
-        var nuevoDetalle = new VehiculosDetalle()
+        if (Detalles.AccesorioId != 0 && Detalles.Valor != 0)
         {
-            AccesorioId = Detalles.AccesorioId,
-            Valor = Detalles.Valor
-        };
+            var nuevoDetalle = new VehiculosDetalle()
+                {
+                    AccesorioId = Detalles.AccesorioId,
+                    Valor = Detalles.Valor
+                };
 
-        vehiculos.VehiculosDetalle.Add(nuevoDetalle);
+            vehiculos.VehiculosDetalle.Add(nuevoDetalle);
 
-        // Limpiamos los campos después de agregar el detalle.
-        Detalles.AccesorioId = 0;
-        Detalles.Valor = 0;
+            // Limpiamos los campos después de agregar el detalle.
+            Detalles.AccesorioId = 0;
+            Detalles.Valor = 0;
 
-        StateHasChanged();
+
+            StateHasChanged();
+        }
+        else
+        {
+            MensajeError = "Ambos campos (AccesorioId y Valor) son requeridos.";
+            StateHasChanged();
+        }
     }
-    else
-    {
-        MensajeError = "Ambos campos (AccesorioId y Valor) son requeridos.";
-        StateHasChanged();
-    }
-}
 
 
-    
+
 
     public async Task RemoverDetalle(VehiculosDetalle detalle)
     {
