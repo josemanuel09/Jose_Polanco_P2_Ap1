@@ -2,6 +2,7 @@
 @page "/Create/{VehiculoId:int}"
 @inject HttpClient httpClient
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 <EditForm Model="vehiculos" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
@@ -45,7 +46,7 @@
                 <div class="row">
                     <div class="col">
                         <div>
-                            <label class="fw-bold mt-3"> AccesorioId</label>
+                            <label class="fw-bold mt-3"> Accesorio</label>
                             <InputSelect @bind-Value="Detalles.AccesorioId" class="form-select">
                                 @foreach (var accesorio in listaAccesorios)
                                 {
@@ -58,7 +59,7 @@
                     <div class="col">
                         <div>
                             <label class="fw-bold mt-3">Valor</label>
-                            <InputNumber @bind-Value="Detalles.Valor" class="form-control" placeholder="Agregue un mensaje."></InputNumber>
+                            <InputNumber @bind-Value="Detalles.Valor" class="form-control" placeholder="Agregue un valor."></InputNumber>
                             <ValidationMessage For="@(() => Detalles.Valor)" />
                         </div>
                     </div>
@@ -96,7 +97,7 @@
                         {
                             var accesorio = listaAccesorios.FirstOrDefault(a => a.AccesorioId == detalle.AccesorioId);
                             <tr>
-                                <td>@detalle.AccesorioId - @accesorio?.Descripcion</td>
+                                <td>@detalle.AccesorioId</td>
                                 <td>@detalle.Valor</td>
                                 <td><button type="button" class="btn btn-danger bi bi-trash-fill" @onclick=@(() => RemoverDetalle(detalle))></button></td>
                             </tr>
@@ -113,13 +114,7 @@
 
             </div>
 
-            @if (!string.IsNullOrEmpty(MensajeExitoGuardar))
-            {
-                <div class=" alert alert-success" role="alert">
-                    @MensajeExitoGuardar
-
-                </div>
-            }
+            
 
         </div>
     
@@ -187,6 +182,21 @@
     }
     public async Task Guardar()
     {
+        var ExisteId = listaVehiculos.Any(v => v.VehiculoId == vehiculos.VehiculoId);
+        if (ExisteId)
+        {
+            MensajeError = "El ID Existe Actualmente.";
+            await JSRuntime.InvokeVoidAsync("hideMessage", 3000);
+            return;
+        }
+
+        var existeDescripcion = listaVehiculos.Any(v => v.Descripcion.Equals(vehiculos.Descripcion, StringComparison.OrdinalIgnoreCase));
+        if (existeDescripcion)
+        {
+            MensajeError = "La descripción Existe Actualmente.";
+            await JSRuntime.InvokeVoidAsync("hideMessage", 3000);
+            return;
+        }
         if (Detalles.AccesorioId != 0 && Detalles.Valor != 0)
         {
             vehiculos.VehiculosDetalle.Add(Detalles);
@@ -199,9 +209,7 @@
         }
 
         Volver();
-        //Nuevo();
-        //StateHasChanged();
-        // navigationManager.NavigateTo("/Index");
+       
 
     }
     public void Nuevo()
@@ -223,11 +231,7 @@
         Volver();
     }
 
-    // public bool Validar()
-    // {
-    //     valorVacio = string.IsNullOrEmpty(Valor);
-    //     return valorVacio;
-    // }
+   
 
     public void AgregarDetalle()
     {
@@ -244,6 +248,7 @@
             // Limpiamos los campos después de agregar el detalle.
             Detalles.AccesorioId = 0;
             Detalles.Valor = 0;
+            MensajeExitoAgregar = "Detalle agregado con éxito.";
 
 
             StateHasChanged();
@@ -272,3 +277,14 @@
         NavigationManager.NavigateTo("Index");
     }
 }
+<script>
+    function hideMessage(duration) {
+        setTimeout(function () {
+            var message = document.querySelector('.alert-success');
+            if (message) {
+                message.style.display = 'none';
+            }
+        }, duration);
+    }
+</script>
+
