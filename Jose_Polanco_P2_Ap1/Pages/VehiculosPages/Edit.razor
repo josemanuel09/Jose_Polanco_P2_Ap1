@@ -1,5 +1,5 @@
-﻿@page "/Create"
-@page "/Create/{VehiculoId:int}"
+﻿@page "/Edit"
+@page "/Edit/{VehiculoId:int}"
 @inject HttpClient httpClient
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -8,7 +8,7 @@
     <DataAnnotationsValidator />
     <div class="card">
         <div class="card-header">
-            <h1>Registro Vehiculos</h1>
+            <h1>Editar Veh&iacute;culos</h1>
         </div>
         <div class="card-body">
             <div class="row">
@@ -140,10 +140,7 @@
     public string MensajeExitoGuardar { get; set; }
     public string MensajeExitoAgregar { get; set; }
 
-    public int resultado { get; set; }
-    public string? mensaje { get; set; }
-    public string Nombre { get; set; } = string.Empty;
-    public string MensajeTicket { get; set; } = string.Empty;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -184,38 +181,20 @@
     }
     public async Task Guardar()
     {
-        var ExisteId = listaVehiculos.Any(v => v.VehiculoId == vehiculos.VehiculoId);
-        if (ExisteId)
+
+        var responde = await httpClient.PutAsJsonAsync($"api/Vehiculos/{VehiculoId}", vehiculos);
+        if (responde.IsSuccessStatusCode)
         {
-            MensajeError = "El ID Existe Actualmente.";
+            MensajeExitoGuardar = "Registro guardado con éxito";
             await JSRuntime.InvokeVoidAsync("hideMessage", 3000);
-            return;
         }
-
-        var existeDescripcion = listaVehiculos.Any(v => v.Descripcion.Equals(vehiculos.Descripcion, StringComparison.OrdinalIgnoreCase));
-        if (existeDescripcion)
+        else
         {
-            MensajeError = "La descripción Existe Actualmente.";
+            MensajeError = "Error al guardar el registro";
             await JSRuntime.InvokeVoidAsync("hideMessage", 3000);
-            return;
-        }
-        if (Detalles.AccesorioId != 0 && Detalles.Valor != 0)
-        {
-            vehiculos.VehiculosDetalle.Add(Detalles);
-
-        }
-
-        double totalGastos = vehiculos.VehiculosDetalle.Sum(Detalles => Detalles.Valor);
-        vehiculos.Gastos += totalGastos;
-
-        var response = await httpClient.PostAsJsonAsync($"api/Vehiculos", vehiculos);
-        if (!response.IsSuccessStatusCode)
-        {
-            return;
         }
 
         Volver();
-
 
     }
     public void Nuevo()
@@ -255,12 +234,8 @@
             Detalles.AccesorioId = 0;
             Detalles.Valor = 0;
 
-            // Limpiamos el mensaje de error
-            MensajeError = "";
-
             MensajeExitoAgregar = "Detalle agregado con éxito.";
             await JSRuntime.InvokeVoidAsync("hideMessage", 3000);
-
             StateHasChanged();
         }
         else
@@ -268,9 +243,11 @@
             MensajeError = "Ambos campos (AccesorioId y Valor) son requeridos.";
             await JSRuntime.InvokeVoidAsync("hideMessage", 3000);
             StateHasChanged();
-
+           
         }
     }
+
+
 
 
     public async Task RemoverDetalle(VehiculosDetalle detalle)
@@ -297,4 +274,7 @@
         }, duration);
     }
 </script>
+
+
+
 
