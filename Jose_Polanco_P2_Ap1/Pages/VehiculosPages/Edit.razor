@@ -8,12 +8,12 @@
     <DataAnnotationsValidator />
     <div class="card">
         <div class="card-header">
-            <h1>Registro Vehiculos</h1>
+            <h1>Editar Veh&iacute;culos</h1>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-6">
-                    <label class="fw-bold">VehiculoID:</label>
+                    <label class="fw-bold">Veh&iacute;culo ID:</label>
                     <InputNumber @bind-Value="vehiculos.VehiculoId" class="form-control"></InputNumber>
                 </div>
                 <div class="col-6">
@@ -24,7 +24,7 @@
             </div>
             <div class="row">
                 <div class="col-6">
-                    <label class="fw-bold">Descripcion:</label>
+                    <label class="fw-bold">Descripci&oacute;n:</label>
                     <InputText @bind-Value="vehiculos.Descripcion" class="form-control"></InputText>
                     <ValidationMessage For="@(() => vehiculos.Descripcion)" />
                 </div>
@@ -36,13 +36,12 @@
             </div>
             <div class="col-6">
                 <label class="fw-bold">Gastos:</label>
-                <InputNumber @bind-Value="vehiculos.Gastos" class="form-control"></InputNumber>
-                <ValidationMessage For="@(() => vehiculos.Gastos)" />
+                <input type="text" value="@vehiculos.Gastos" class="form-control" readonly />
             </div>
 
 
             <div class="card card-header mt-5">
-                <h3>Detalle de Vehiculos</h3>
+                <h3>Detalle de Veh&iacute;culos</h3>
                 <div class="row">
                     <div class="col">
                         <div>
@@ -75,11 +74,14 @@
                         @MensajeExitoAgregar
                     </div>
                 }
-                @if (!string.IsNullOrEmpty(MensajeError))
+                else
                 {
-                    <div class="alert alert-danger" role="alert">
-                        @MensajeError
-                    </div>
+                    @if (!string.IsNullOrEmpty(MensajeError))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @MensajeError
+                        </div>
+                    }
                 }
             </div>
 
@@ -114,13 +116,7 @@
 
         </div>
 
-        @if (!string.IsNullOrEmpty(MensajeExitoGuardar))
-        {
-            <div class=" alert alert-success" role="alert">
-                @MensajeExitoGuardar
 
-            </div>
-        }
 
     </div>
 
@@ -247,6 +243,7 @@
             MensajeError = "Ambos campos (AccesorioId y Valor) son requeridos.";
             await JSRuntime.InvokeVoidAsync("hideMessage", 3000);
             StateHasChanged();
+           
         }
     }
 
