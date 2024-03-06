@@ -13,7 +13,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-6">
-                    <label class="fw-bold">VehiculoID:</label>
+                    <label class="fw-bold">Veh&iacute;culo ID:</label>
                     <InputNumber @bind-Value="vehiculos.VehiculoId" class="form-control"></InputNumber>
                 </div>
                 <div class="col-6">
@@ -24,7 +24,7 @@
             </div>
             <div class="row">
                 <div class="col-6">
-                    <label class="fw-bold">Descripcion:</label>
+                    <label class="fw-bold">Descripci&oacute;n:</label>
                     <InputText @bind-Value="vehiculos.Descripcion" class="form-control"></InputText>
                     <ValidationMessage For="@(() => vehiculos.Descripcion)" />
                 </div>
@@ -37,12 +37,11 @@
             <div class="col-6">
                 <label class="fw-bold">Gastos:</label>
                 <input type="text" value="@vehiculos.Gastos" class="form-control" readonly />
-                <ValidationMessage For="@(() => vehiculos.Gastos)" />
             </div>
 
 
             <div class="card card-header mt-5">
-                <h3>Detalle de Vehiculos</h3>
+                <h3>Detalle de Veh&iacute;culos</h3>
                 <div class="row">
                     <div class="col">
                         <div>
@@ -77,49 +76,50 @@
                 }
                 else
                 {
-                @if (!string.IsNullOrEmpty(MensajeError))
-                {
-                    <div class="alert alert-danger" role="alert">
-                        @MensajeError
-                    </div>
+                    @if (!string.IsNullOrEmpty(MensajeError))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @MensajeError
+                        </div>
+                    }
                 }
             </div>
 
 
-                <table class='table table-bordered table-hover'>
-                    <thead>
+            <table class='table table-bordered table-hover'>
+                <thead>
+                    <tr>
+                        <th>AccesorioId</th>
+                        <th>Valor</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detalle in vehiculos.VehiculosDetalle)
+                    {
+                        var accesorio = listaAccesorios.FirstOrDefault(a => a.AccesorioId == detalle.AccesorioId);
                         <tr>
-                            <th>AccesorioId</th>
-                            <th>Valor</th>
-                            <th></th>
+                            <td>@detalle.AccesorioId</td>
+                            <td>@detalle.Valor</td>
+                            <td><button type="button" class="btn btn-danger bi bi-trash-fill" @onclick=@(() => RemoverDetalle(detalle))></button></td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var detalle in vehiculos.VehiculosDetalle)
-                        {
-                            var accesorio = listaAccesorios.FirstOrDefault(a => a.AccesorioId == detalle.AccesorioId);
-                            <tr>
-                                <td>@detalle.AccesorioId</td>
-                                <td>@detalle.Valor</td>
-                                <td><button type="button" class="btn btn-danger bi bi-trash-fill" @onclick=@(() => RemoverDetalle(detalle))></button></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-
-            </div>
-            <div class="card-footer text-center ">
-
-                <button class="btn btn-success bi-floppy-fill">Guardar </button>
-                <button type="button" class="btn btn-primary bi bi-file-earmark-plus-fill" @onclick="Nuevo">Nuevo </button>
-                <a href="/Index" type="button" class="btn btn-secondary bi bi-arrow-left-square-fill" @onclick="Nuevo">Volver atr&aacute;s </a>
-
-            </div>
-
-            
+                    }
+                </tbody>
+            </table>
 
         </div>
-    
+        <div class="card-footer text-center ">
+
+            <button class="btn btn-success bi-floppy-fill">Guardar </button>
+            <button type="button" class="btn btn-primary bi bi-file-earmark-plus-fill" @onclick="Nuevo">Nuevo </button>
+            <a href="/Index" type="button" class="btn btn-secondary bi bi-arrow-left-square-fill" @onclick="Nuevo">Volver atr&aacute;s </a>
+
+        </div>
+
+
+
+    </div>
+
 </EditForm>
 
 @code {
@@ -215,7 +215,7 @@
         }
 
         Volver();
-       
+
 
     }
     public void Nuevo()
@@ -237,9 +237,9 @@
         Volver();
     }
 
-   
 
-    public void AgregarDetalle()
+
+    public async void AgregarDetalle()
     {
         if (Detalles.AccesorioId != 0 && Detalles.Valor != 0)
         {
@@ -254,19 +254,23 @@
             // Limpiamos los campos después de agregar el detalle.
             Detalles.AccesorioId = 0;
             Detalles.Valor = 0;
-            MensajeExitoAgregar = "Detalle agregado con éxito.";
 
+            // Limpiamos el mensaje de error
+            MensajeError = "";
+
+            MensajeExitoAgregar = "Detalle agregado con éxito.";
+            await JSRuntime.InvokeVoidAsync("hideMessage", 3000);
 
             StateHasChanged();
         }
         else
         {
             MensajeError = "Ambos campos (AccesorioId y Valor) son requeridos.";
+            await JSRuntime.InvokeVoidAsync("hideMessage", 3000);
             StateHasChanged();
+
         }
     }
-
-
 
 
     public async Task RemoverDetalle(VehiculosDetalle detalle)
