@@ -19,7 +19,6 @@ namespace Jose_Polanco_P2_Ap1.Shared.Models
         [Required(ErrorMessage = "Este campo es obligatorio.")]
         public double Costo { get; set; }
 
-        [Required(ErrorMessage = "Este campo es obligatorio.")]
         public double Gastos { get; set; }
         [ForeignKey("VehiculoId")]
         public ICollection<VehiculosDetalle> VehiculosDetalle { get; set; } = new List<VehiculosDetalle>();
