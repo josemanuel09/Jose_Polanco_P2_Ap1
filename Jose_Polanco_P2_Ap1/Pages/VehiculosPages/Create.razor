@@ -36,7 +36,7 @@
             </div>
             <div class="col-6">
                 <label class="fw-bold">Gastos:</label>
-                <InputNumber @bind-Value="vehiculos.Gastos" class="form-control"></InputNumber>
+                <input type="text" value="@vehiculos.Gastos" class="form-control" readonly />
                 <ValidationMessage For="@(() => vehiculos.Gastos)" />
             </div>
 
