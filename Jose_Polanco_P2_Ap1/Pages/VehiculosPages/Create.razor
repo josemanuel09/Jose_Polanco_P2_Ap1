@@ -204,6 +204,10 @@
             vehiculos.VehiculosDetalle.Add(Detalles);
 
         }
+
+        double totalGastos = vehiculos.VehiculosDetalle.Sum(Detalles => Detalles.Valor);
+        vehiculos.Gastos += totalGastos;
+
         var response = await httpClient.PostAsJsonAsync($"api/Vehiculos", vehiculos);
         if (!response.IsSuccessStatusCode)
         {
